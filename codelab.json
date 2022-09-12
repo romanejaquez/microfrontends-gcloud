@@ -1,0 +1,29 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2022-09-11T23:09:18-04:00",
+  "id": "microservices-google-cloud",
+  "duration": 0,
+  "title": "Microservices and Microfrontends in the Google Cloud: Codelab",
+  "summary": "Codelab on Microservice in the Google Cloud",
+  "source": "gdg-microservices-codelab.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "cloud"
+  ],
+  "tags": [
+    "cloud",
+    "firebase",
+    "google",
+    "html",
+    "nginx",
+    "web"
+  ],
+  "feedback": "https://romanjustcodes.web.app",
+  "url": "microservices-google-cloud"
+}

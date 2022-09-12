@@ -1,0 +1,1107 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Microservices and Microfrontends in the Google Cloud: Codelab</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="microservices-google-cloud"
+                  title="Microservices and Microfrontends in the Google Cloud: Codelab"
+                  environment="web"
+                  feedback-link="https://romanjustcodes.web.app">
+    
+      <google-codelab-step label="Overview" duration="0">
+        <h2 is-upgraded>What You&#39;ll Be Building</h2>
+<p>In this codelab, we&#39;ll dive into the Google Cloud and build micro-services using <strong>Docker</strong> containers, backed by data powered by <strong>Firebase Cloud Firestore</strong>, tackling a fictitious e-commerce site.</p>
+<p>This is the outcome of what we&#39;ll be building during this session:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/2c02a63fcebe8c00.png"></p>
+<h2 is-upgraded>Sinopsis</h2>
+<p>This is a fictitious e-commerce site called &#34;What&#39;s Buggin&#39; You?&#34; that deals with selling bug-killing pesticide products. Customers can order products from a product list, and add them to their shopping cart for later purchase.</p>
+<p>In a matter of minutes, you&#39;ll become familiar with building Docker containers to build a micro-services architecture in the Google Cloud while learning the following:</p>
+<ul>
+<li>Learn about microservices as a way to structure an application as a collection of services that are: <ul>
+<li>highly maintainable and testable</li>
+<li>loosely coupled</li>
+<li>independently deployable</li>
+<li>organized around business capabilities</li>
+<li>owned by a small team.</li>
+</ul>
+</li>
+<li>Learn about micro-frontends, and how the micro-services concept extends to the front-end world to build more resilient, feature-rich,</li>
+<li>Learn about containers and why they are not just a hype word in the tech industry, but a great way to package your applications so they can be easily deployed, while making your code highly portable and using computing resources more efficiently</li>
+<li>Learn how to build and run Docker containers in the Google Cloud via the Google Cloud Shell, an interactive, web-based admin tool through which you can manage your cloud resources</li>
+<li>Learn about Firebase Cloud Firestore, a no-sql, document and collection-based, scalable and server-less cloud Database, with automatic multi-region data replication for high availability, strong consistency, atomic batch operations and real-time transaction support.</li>
+</ul>
+<h2 is-upgraded>No installation required!</h2>
+<p>We&#39;ll use the <strong>Google Cloud Console</strong>, the <strong>Firebase Console</strong> and the <strong>Google Cloud Shell</strong>, and leverage Google infrastructure <strong>FOR FREE</strong> to complete this hands-on workshop.</p>
+<p>A Gmail account is all you need pretty much!</p>
+<p>Let&#39;s proceed!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Architecture: Containers" duration="0">
+        <p>The following architecture is what we&#39;ll be accomplishing in this session:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/23afa99310b9ee8d.png"></p>
+<p>This application will consist of the following:</p>
+<ul>
+<li><strong>Product List</strong>: this is how we will display to the users the available inventory of pesticide products available for purchase.</li>
+<li><strong>Shopping Cart</strong>: this is how users will keep track of how many items they will be selecting from the list of products</li>
+<li><strong>Main Site</strong>: There will be a main e-commerce site that consolidates all features and displays them a a single unit.</li>
+<li><strong>Footer</strong>: the footer will contain important links and information about the e-commerce site.</li>
+</ul>
+<p>Each of the four main features of this e-commerce site will be developed independently and in isolation, however they will communicate with one another in a decoupled fashion using the real-time capabilities of <strong>Firebase</strong>, hence the reason why each will be deployed as a separate <strong>container</strong>, and each will manage its own data store using <strong>Firebase Cloud Firestore</strong>.</p>
+<h2 is-upgraded>Building Containerized Applications</h2>
+<p>Before diving into containerized applications, you must learn two basic concepts, such as <strong>containers</strong> and <strong>images</strong> and what they represent in this whole app packaging paradigm.</p>
+<h3 is-upgraded>What is Docker?</h3>
+<p><a href="https://www.docker.com/why-docker/" target="_blank">Docker</a> is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/9ec4b1e5a56ce0d6.png"></p>
+<h3 is-upgraded>What are Containers?</h3>
+<p>A <a href="https://www.docker.com/resources/what-container/" target="_blank">container</a> is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another. It is basically a runnable instance of an image.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/f15e9093bf767d5e.png"></p>
+<h3 is-upgraded>What is an Image?</h3>
+<p class="image-container"><img alt="MicroServices UI" src="img/47b002606b9875d1.png"></p>
+<p>A Docker image is a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings.</p>
+<p>An image is a <strong>read-only template</strong> with instructions for creating a Docker container. Often, an image is based on another image, with some additional customization. For example, you may build an image which is based on the ubuntu image, but installs the Apache web server and your application, as well as the configuration details needed to make your application run.</p>
+<p>Images become containers at runtime and in the case of Docker containers – images become containers when they run on <a href="https://www.docker.com/products/container-runtime/" target="_blank"><strong>Docker Engine</strong></a>, the industry-leading container runtime, allowing containerized applications to run anywhere consistenly on any infrastructure.</p>
+<p>You can learn more about <strong>Docker</strong>, containers and images and how containers differ from virtual machines by following <a href="https://www.docker.com/resources/what-container/" target="_blank">this link</a>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Architecture: Firebase" duration="0">
+        <h2 is-upgraded>What is Firebase?</h2>
+<p class="image-container"><img alt="MicroServices UI" src="img/2fa3bd780bd12c1b.png"></p>
+<p><a href="https://firebase.google.com/" target="_blank">Firebase</a> is an app development platform that helps you build and grow apps and games users love. Backed by the Google Cloud and trusted by millions of businesses around the world, and it contains a suite of products for building robust mobile, web and desktop apps that can scale to billions of users.</p>
+<p>In this session we&#39;ll be using <a href="https://firebase.google.com/products/firestore" target="_blank">Firebase Cloud Firestore</a>, a NoSQL document database that lets you easily store, sync, and query data for your mobile and web apps - at global scale. One of its best features is its serverless nature, in which you can stand up a Firebase backend without provisioning your own servers. You can access Cloud Firestore with traditional client libraries such as Node, Python, Go and Java.</p>
+<h2 is-upgraded>Firebase Data Model</h2>
+<p>Unlike a SQL database, there are no tables or rows. Instead, you store data in documents, which are organized into collections.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/f1f8a08ba0f3804c.png"></p>
+<p>Each document contains a set of key-value pairs. Cloud Firestore is optimized for storing large collections of small documents.</p>
+<p>All documents must be stored in collections. Documents can contain subcollections and nested objects, both of which can include primitive fields like strings or complex objects like lists.</p>
+<h2 is-upgraded>Documents</h2>
+<p>In Cloud Firestore, the unit of storage is the document. A document is a lightweight record that contains fields, which map to values. Each document is identified by a name.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/76ffb1fbec36bc3f.png"></p>
+<h2 is-upgraded>Collections</h2>
+<p>Documents live in collections, which are simply containers for documents. For example, you could have a <strong>products</strong> collection to contain your various products, each represented by a <strong>document</strong>:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/79ee35b5a4f5165d.png"></p>
+<p>Cloud Firestore is schemaless, so you have complete freedom over what fields you put in each document and what data types you store in those fields. Documents within the same collection can all contain different fields or store different types of data in those fields. However, it&#39;s a good idea to use the same fields and data types across multiple documents, so that you can query the documents more easily.</p>
+<p>In Firebase is how we will store the data that will power our application, also we&#39;ll leverage one of its most powerful features: real-time updates.</p>
+<h2 is-upgraded>Pulling Data from Firebase</h2>
+<p>There are three ways to retrieve data stored in Cloud Firestore. Any of these methods can be used with documents, collections of documents, or the results of queries:</p>
+<ul>
+<li>Call a method to get the data once: we will use this to display the initial data from our data store.</li>
+<li>Set a listener to receive data-change events: we will use this to respond to updates to our data so we keep the application in sync with the backend.</li>
+<li>Bulk-load Firestore snapshot data from an external source via data bundles. We will not touch this approach in this session, but feel free to explore <a href="https://firebase.google.com/docs/firestore/bundles" target="_blank">this feature</a> on your own.</li>
+</ul>
+<p>When you set a listener, Cloud Firestore sends your listener an initial snapshot of the data, and then another snapshot each time the document changes.</p>
+<h2 is-upgraded>Get Realtime updates with Cloud Firestore</h2>
+<p>You can listen to a document with the <strong>onSnapshot()</strong> method. An initial call using the callback you provide creates a document snapshot immediately with the current contents of the single document. Then, each time the contents change, another call updates the document snapshot.</p>
+<p>Later when we build our product features, we will use the Firebase SDK for web to tap into the Firebase functionality that will allow us to both retrieve and listen to changes on our Cloud Firestore database, as shown below:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/5606e937d4ac76df.png"></p>
+<p>Let&#39;s start by setting up Firebase and create the documents and collections that will hydrate our web application.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Set up Firebase Cloud Firestore" duration="0">
+        <p>In this section we&#39;ll create a Firebase project, we&#39;ll create our first Cloud Firestore database and create two of the collections that will power our data.</p>
+<p>Let&#39;s start by navigating to the <strong>Firebase Console</strong> by clicking on <a href="https://console.firebase.google.com/" target="_blank">this link</a>. Use a valid <strong>Gmail</strong> account, preferably one that you haven&#39;t used before for setting up Google Cloud or Firebase, and with no billing accounts attached to it. Remember this Gmail account for later steps in this workshop.</p>
+<p>Create your first project by clicking on the <strong>Create a Project</strong> button:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/52df662f9adaf6cd.png"></p>
+<p>In the wizard, provide a name for your project, and accept the terms by checking the checkboxes below:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/829cce0e402b6a5b.png"></p>
+<p>In the next step, disable Google Analytics as we don&#39;t need it for this project (you can enable later if needed). Then, click on &#34;Create Project&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/f2ee0330f92f818f.png"></p>
+<p>Wait until the project gets created (this may take a few seconds):</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/d21460b35199f508.png"></p>
+<p>Once completed, you should get the following message that your project is ready. Click &#34;Continue&#34; to proceed:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/1df0485ce7487669.png"></p>
+<p>You&#39;ve landed at the home page of the Firebase Console, where you can see all features in Firebase at your disposal. We&#39;ll focus on <strong>Firebase Cloud Firestore</strong> for now, so in the left navigation menu, under <strong>Build</strong>, click on <strong>Firestore Database</strong>:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/5c87d32b9ba8034a.png"></p>
+<p>In the <strong>Cloud Firestore</strong> landing page, click on &#34;Create database&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/b3660bb6b1002aa2.png"></p>
+<p>On the first step of the database creation wizard, select to <strong>Start in test mode</strong>, which will lower the security rules on the database so we can set it up quickly (this last 30 days, so make sure to update your security rules after a month). Click &#34;Next&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/57381580a453212a.png"></p>
+<p>Next step deals with the location of the Cloud Firestore database. Pick a multi-regional location for increased availability - you can keep the default <strong>nam5 (us-central)</strong> if you want. Click &#34;Enable&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/f349e9bff47f2aa6.png"></p>
+<p>Wait a few seconds until your database is provisioned in the Google Cloud:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/a682d7c7ab3ff463.png"></p>
+<p>We&#39;ve landed on our Cloud Firestore database called <strong>gcloud-microservices-web</strong>. We must start now by creating collections, which will be the containers for our documents. Create your first collection by clicking on the <strong>Start collection</strong> button:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/4b2fc743fd29b6d4.png"></p>
+<p>Assign it the ID of <strong>products</strong>; click &#34;Next&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/566c9f0af47c15d0.png"></p>
+<p>With our <strong>products</strong> collection created, you can proceed to start adding documents. Let&#39;s add a first document to this collection. You can either assign your own ID, or use the <strong>Auto-ID</strong> option.</p>
+<p>Add the ID <strong>prod1001</strong>, and the following fields (you&#39;ll need to click on the <strong>Add field</strong> option to add the remaining fields):</p>
+<ul>
+<li>name: (type <strong>string</strong>) Backwoods Insect Repellent</li>
+<li>description: (type <strong>string</strong>) 4-8z, 2-pack value</li>
+<li>price: (type <strong>number</strong>) 4.75</li>
+<li>img: (type <strong>string</strong>) https://mobileimages.lowes.com/productimages/3da8b18d-01a0-4915-8c08-f753cd0d7c22/03183641.jpg</li>
+</ul>
+<p>Your document should look like below. Click &#34;Save&#34; when ready:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/b93678056a405cb9.png"></p>
+<p>After saving the document, your data structure should look like this:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/58d6ebbe99ef946c.png"></p>
+<p>Add the remaining documents to the <strong>products</strong> collection (<strong>prod1002</strong>) by clicking on the <strong>Add document</strong> option, and providing their data as follows:</p>
+<ul>
+<li>name: (type <strong>string</strong>) Off! Deep Woods Insect Repellent</li>
+<li>description: (type <strong>string</strong>) 6-oz All Purpose Bug Spray</li>
+<li>price: (type <strong>number</strong>) 5.25</li>
+<li>img: (type <strong>string</strong>) https://mobileimages.lowes.com/productimages/0d5338e5-4b81-4ec0-ab40-5ff9de340570/04236999.jpg</li>
+</ul>
+<p>Add a third document (<strong>prod1003</strong>) as follows:</p>
+<ul>
+<li>name: (type <strong>string</strong>) Repel Sportsmen Max Insect Repellent</li>
+<li>description: (type <strong>string</strong>) 40% DEET 6.5-oz All Purpose</li>
+<li>price: (type <strong>number</strong>) 4.55</li>
+<li>img: (type <strong>string</strong>) https://mobileimages.lowes.com/productimages/2d753019-2833-4909-b2de-facddf49efa7/08224306.png</li>
+</ul>
+<p>After adding all documents, your collection should look like this:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/931cb1e79a051114.png"></p>
+<p>Let&#39;s add one more collection (<strong>orders</strong>) that will hold the orders placed by our users.</p>
+<p>Same as before, click on the <strong>Start collection</strong> to add a new collection; add <strong>orders</strong> as its collection ID; click &#34;Next&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/24f2ce486983f557.png"></p>
+<p>Let&#39;s add one document for now since it&#39;s required to create a collection, and add the following fields, with their corresponding values:</p>
+<ul>
+<li>DocumentID: <strong>order1001</strong></li>
+<li>fields: <ul>
+<li>order: (type <strong>number</strong>) 1001</li>
+<li>productId: (type <strong>string</strong>) prod1001</li>
+</ul>
+</li>
+</ul>
+<p>Your new order document should look like below; click &#34;Save&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/8b61c3ae0aae4b9d.png"></p>
+<p>We will come back later to the Firebase Console to grab the configuration settings that will allow us to connect to our Cloud Firestore database and pull its data.</p>
+<p>Now we&#39;re fully set up on the backend side of things, with two collections (<strong>products</strong> - with three documents, <strong>orders</strong> with one document) and now we&#39;re ready to consume their data.</p>
+<p>With that said, let&#39;s now package our product features as containers!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Set up your Google Cloud Console environment" duration="0">
+        <p>For the next step in setting up our microservices architecture, we will first connect to the <strong>Google Cloud Console</strong> and leverage <strong>Cloud Shell</strong>.</p>
+<p><strong>Cloud Shell</strong> is an interactive shell environment for Google Cloud that lets you learn and experiment with Google Cloud and manage your projects and resources from your web browser. It is FREE service for all Google Cloud Users, and provisions 5GB of persistent disk storage mounted.</p>
+<p>For more information on how to use the Cloud Shell and its many features, follow <a href="https://cloud.google.com/shell/docs/using-cloud-shell" target="_blank">this link</a>.</p>
+<p>To access the <strong>Google Cloud Shell</strong>, first navigate to the <strong>Google Cloud Console</strong> with the same <strong>Gmail</strong> account you used to set up your <strong>Firebase</strong> project by following <a href="https://console.cloud.google.com" target="_blank">this link</a>; if prompted, agree and continue:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/a81782c82dad1668.png"></p>
+<p>Once in the <strong>Google Cloud Console</strong>, you can see all features you have available, even under the FREE tier. Some features may require setting up a billing account prior to accessing them, but we will only use the <strong>Cloud Shell</strong> (both Terminal and Editor), as well as <strong>Cloud Firestore</strong> (which is free with limits).</p>
+<p>If prompted to start a &#34;FREE Trial&#34;, click on &#34;Dismiss&#34; - on the FREE Trial, you are required to put in a credit card, but you won&#39;t be charged. This workshop is ONLY for accessing the FREE TIER features, NOT THE FREE TRIAL, just so we&#39;re clear.</p>
+<h2 is-upgraded>Access the Cloud Shell</h2>
+<p>To access the Cloud Shell, click on the terminal icon at the top right section of the console:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/244ea675c50377ee.png"></p>
+<p>The bottom half of the screen opens up, showing you a message describing what the Cloud Shell is and what you have access through it. Click &#34;Continue&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/ffc1d2dd77fce230.png"></p>
+<p>After a few seconds, Google Cloud provisions a tiny Debian-based Compute Engine VM instance with a shell interface, through which you can run commands, access a few pre-loaded tools, as well as access your 5GB of persistent disk storage mounted as your <strong>$HOME</strong> directory. This session lasts about an hour if not attended, however all files you store in your home directory persist between sessions.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/d606fe2a41af515.png"></p>
+<p>In this terminal / shell experience, you can run commands, such as <strong>gcloud config list</strong> which gives you a list of the basic configuration options in your Google Cloud environment. Try running the command <strong>gcloud config list</strong>, and if prompted to authorize Cloud Shell, click on &#34;Authorize&#34;:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/f7e11b6e083bf698.png"></p>
+<p>Let&#39;s run another command; try running the following command:</p>
+<pre><code language="language-javascript" class="language-javascript">gcloud config list project
+
+</code></pre>
+<p>This command should list the project in the Google Cloud that encompasses all resources running on your cloud environment.</p>
+<p>You should get something like:</p>
+<pre><code language="language-javascript" class="language-javascript">project (unset)
+
+</code></pre>
+<p>If so, it&#39;s because  you haven&#39;t selected a project to associate your cloud resources with.</p>
+<p>At the top left of the Google Cloud Console, locate the &#34;Select a project&#34; dropdown:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/26a5931d3bfc8c89.png"></p>
+<p>If you&#39;ve followed all the steps correctly up until now, you should get a dialog window showing you the SAME PROJECT NAME you created when  you were in the Firebase Console - this proves once and for all how tighly connected Firebase and the Google Cloud are! Firebase sits on top of the Google Cloud, which means we should be able to access our Cloud Firestore database right from here, the Google Cloud Console! We&#39;ll try that later. Click on the name of the project.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/19cf193d3aac4870.png"></p>
+<p>Close and re-open the Cloud Shell Terminal, and if you run the command <strong>gcloud config list project</strong> again,  you should get the following output, in which you see the project properly set now:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/5504515c98b42845.png"></p>
+<p>The rest of this workshop we&#39;ll do it by creating folders and files, so if you&#39;re hardcore and want to use the terminal for all of this, suit yourself - otherwise follow along as we&#39;ll use the Cloud Shell Editor - a companion web-based editor that allows you to interact with the contents of your home direction in a GUI-based interface as opposed to through the terminal.</p>
+<p>At the top of the Cloud Shell Terminal, locate the &#34;Open Editor&#34; option and click it:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/bc80202a1d3b99d5.png"></p>
+<p>Now your view switches to that of a text editor; you can switch back to the terminal if you wish to by locating the &#34;Open Terminal&#34; option at the top of this editor:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/b555485219a0cd8b.png"></p>
+<p>Once in the Cloud Shell Editor, we&#39;ll build our application structure, separating each feature into its own folder, simulating the feature and code boundaries.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create the Architecture Folder Structure" duration="0">
+        <p>We&#39;ll be building our architecture by creating a folder structure that will simulate separate features being developed by multiple teams.</p>
+<p>Create the following folder structure, at the root of your workspace, by right-clicking anywhere on the left column of the Cloud Shell Editor, select <strong>New Folder</strong> and create each folder as follows:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/4ef297ea769be802.png"></p>
+<ul>
+<li><strong>shopping-cart</strong>: this folder will contain the code that will represent the shopping cart feature.</li>
+<li><strong>products</strong>: this folder will contain the code that will represent the products feature.</li>
+<li><strong>footer</strong>: this folder will contain the code that will represent the footer feature.</li>
+<li><strong>e-commerce</strong>: this folder will contain the code that consolidates all other features above (shopping cart, products, and footer), inside a shell containing regions where each feature will appear.</li>
+</ul>
+<p>Each of the features above will be developed, tested and deployed in isolation, at its own cadence, and then integrated into the e-commerce feature as a single unit. The features can communicate with each other in a decoupled fashion via messages (in this case, we&#39;re using Firebase&#39;s real-time capabilities and snapshot listeners).</p>
+<p>Let&#39;s start developing the features one by one.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Develop the Footer Feature" duration="0">
+        <p>Let&#39;s work on the footer feature for this e-commerce store. Imagine a separate team working on just the footer, which contains links to content related to the products available, etc. The footer is nothing more than a simple HTML site, hosted on its own Docker container running inside an NGINX web server.</p>
+<p>Let&#39;s start!</p>
+<p>Locate the <strong>footer</strong> folder, and create a file called <strong>index.html</strong> by right-clicking inside the folder and selecting the <strong>New File</strong> option. Drop the code below inside this file:</p>
+<pre><code language="language-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/icon?family=Material+Icons&#34; rel=&#34;stylesheet&#34;&gt;
+        &lt;link rel=&#34;preconnect&#34; href=&#34;https://fonts.googleapis.com&#34;&gt;
+        &lt;link rel=&#34;preconnect&#34; href=&#34;https://fonts.gstatic.com&#34; crossorigin&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&amp;display=swap&#34; rel=&#34;stylesheet&#34;&gt;
+        &lt;style&gt;
+            body {
+                font-family: &#39;Montserrat&#39;, sans-serif;
+                padding: 0;
+                margin: 0;
+                background: #000;
+            }
+
+            .footer {
+                color: #FFF;
+                padding: 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .footer &gt; .material-icons {
+                flex: 1;
+                font-size: 60px !important;
+            }
+
+            .footer-nav {
+                flex: 2;
+                display: flex;
+                justify-content: end;
+            }
+
+            .footer-nav &gt; ul {
+                list-style: none;
+                display: inline-flex;
+            }
+
+            .footer-nav &gt; ul &gt; li {
+                padding: 0px 20px;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;footer&gt;
+            &lt;div class=&#34;footer&#34;&gt;
+                &lt;span class=&#34;material-icons&#34;&gt;pest_control&lt;/span&gt;
+                &lt;nav class=&#34;footer-nav&#34;&gt;
+                    &lt;ul&gt;
+                        &lt;li&gt;About&lt;/li&gt;
+                        &lt;li&gt;Contact Us&lt;/li&gt;
+                        &lt;li&gt;Products&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/nav&gt;
+            &lt;/div&gt;
+        &lt;/footer&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p>Now, in order to deploy this as an independent, separate, isolated container, you need to add a <strong>Dockerfile</strong>, which is simply a text-based script containing instructions on how to create a container image. We&#39;ll create the image first, then deploy a container based on that image.</p>
+<h2 is-upgraded>Create the Dockerfile</h2>
+<p>Right-click inside the <strong>footer</strong> folder, and add a file called <strong>Dockerfile</strong>; drop the code below inside this file:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/f8a5f7a58e39d85f.png"></p>
+<pre><code language="language-Dockerfile" class="language-Dockerfile">FROM nginx:latest
+COPY . /usr/share/nginx/html/
+
+EXPOSE 80
+CMD [&#34;nginx&#34;, &#34;-g&#34;, &#34;daemon off;&#34;]
+
+</code></pre>
+<p>Notice the script above; our Docker image will be based on the latest version of the base <strong>NGINX</strong> image publicly available. The <strong>COPY</strong> command will copy the contents of the current directory into the <strong>/usr/share/nginx/html/</strong> path, once the container is up and running. We will expose port <strong>80</strong> since this is a web server, and then set the <strong>daemon</strong> option to <strong>off</strong>. This directive tells Nginx to stay in the foreground. For containers this is useful as best practice is for one container = one process. One server (container) has only one service.</p>
+<h2 is-upgraded>Build the Footer Docker image</h2>
+<p>With the code and the Dockerfile in place, it&#39;s time to build the image from which we&#39;ll create our container later.</p>
+<p>Open up a Terminal (either by clicking on the <strong>Terminal &gt; New Terminal</strong> menu option or clicking on the <strong>Open Terminal</strong> button to switch back to the Cloud Shell). Make sure to be inside of the <strong>footer</strong> folder to run the following commands.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/c0bea11c34384ff3.png"></p>
+<p>Run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker build -t footer-img .
+
+</code></pre>
+<p>The above <strong>docker build</strong> command creates an image with the tag <strong>footer-img</strong> (with the <strong>-t</strong> command), the dot (.) at the end means to take the current folder contents to build the image. You must have a <strong>Dockerfile</strong> at the root of the folder from where you&#39;ll build your image.</p>
+<p>If prompted to authorize the shell, make sure to do so:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/d0709cc15858e94.png"></p>
+<p>After a few seconds, if all went well, you should get a message like this at the terminal:</p>
+<pre><code language="language-cmd" class="language-cmd">Successfully built a355943b6e28
+Successfully tagged footer-img:latest
+
+</code></pre>
+<p>Verify that the Docker image got built successfully by running the command <strong>docker image ls</strong>, which lists the images that have been built by you and images that have been pulled down. You will see an output like this:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker image ls
+
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+footer-img   latest    a355943b6e28   6 minutes ago   142MB
+nginx        latest    2b7d6430f78d   2 weeks ago     142MB
+
+</code></pre>
+<p>You should see both images <strong>footer-image</strong> and <strong>nginx</strong>.</p>
+<h2 is-upgraded>Run the Footer Container</h2>
+<p>With the images already built, now let&#39;s proceed to run a container based on our newly created <strong>footer-image</strong>.</p>
+<p>Still inside the <strong>footer</strong> folder, run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker run -d -p 8083:80 --name footer-container footer-img
+
+</code></pre>
+<p>Let&#39;s dissect this command:</p>
+<ul>
+<li><strong>docker run</strong> is the command to run a Docker image as a container</li>
+<li><strong>-d</strong> runs the container in detached mode, meaning it won&#39;t hold the prompt and run in the background</li>
+<li><strong>-p</strong> allows you to expose the port and map internal port to external ports; in our case, the NGINX internal port 80 will be mapped to an external port 8083, that way we can access the content being served off of the NGINX web server</li>
+<li><strong>–name footer-container</strong> is a way for you to name your running containers. If you don&#39;t they get assigned a random ID.</li>
+<li><strong>footer-img</strong> allows you to specify the image from which this container will be instantiated and run</li>
+</ul>
+<p>Verify that the container is successfully running by running the following command; you should get similar output to this:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker ps
+
+CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                  NAMES
+bd35ac7da8a3   footer-img   &#34;/docker-entrypoint....&#34;   4 minutes ago   Up 4 minutes   0.0.0.0:8083-&gt;80/tcp   footer-container
+
+</code></pre>
+<p>Now, to preview it on the browser and viewing the contents being served from this container, locate the <strong>Web Preview</strong> option, click on <strong>Change port</strong>:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/31f019edfaeae952.png"></p>
+<p>Change it to port <strong>8083</strong> which maps to the <strong>footer-container</strong> container, then click on <strong>Change and Preview</strong>:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/c6331851bb5ff69c.png"></p>
+<p>You will get a browser window that launches with the URL loading the contents of the <strong>footer-container</strong> web server, showing the footer web page; you should see something like this:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/10adcca261fe527c.png"></p>
+<p>We have a fully functional Docker container running a containerized web app that represents just the footer of the application, in a very encapsulated, self-contained and independent fashion.</p>
+<p>Let&#39;s keep moving along and work on the rest of the features!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Develop the Shopping Cart feature" duration="0">
+        <p>The shopping cart feature of this e-commerce site will keep track of the products the users order. For the sake of this workshop, we&#39;ll make it so one product maps to a single order. The shopping cart will display the orders made as well as a way to clear the contents of the cart.</p>
+<p>This feature can be developed also in isolation, or by a completely separate team.</p>
+<p>Let&#39;s start!</p>
+<h2 is-upgraded>Set up a Firebase Web App to get the Connection details</h2>
+<p>Before we proced, we must go back to the Firebase Console and set up a web app, from which we&#39;ll grab the configuration details in order to be able to connect to Firebase Cloud Firestore DB from both our shopping cart and product features.</p>
+<p>Go back to the <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a> with your existing credentials. Click on <strong>Add App</strong>:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/da72192f0109349f.png"></p>
+<p>Then, select the platform - in our case, <strong>Web</strong>:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/9406f19986fb928f.png"></p>
+<p>In the wizard that appears, on the first step, register your web app by using a nickname - do not select <strong>Firebase Hosting</strong> as our web apps will already be hosted within containers running NGINX:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/73be41276698876.png"></p>
+<p>The next step will show you how to add the Firebase SDK, either via NPM (if you&#39;re building backend apps) or by using a script tag (if you&#39;re building web-based client apps). Select the <strong>Use a &lt;script&gt; tag</strong> to get the corresponding Firebase configuration.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/17a07b9787589a33.png"></p>
+<p>Copy the block of code that looks like the following - store it somewhere since we&#39;ll need it later:</p>
+<pre><code language="language-javascript" class="language-javascript">// COPY YOUR OWN CONFIGURATION FROM YOUR FIREBASE PROJECT
+const firebaseConfig = {
+    apiKey: &#34;AIzaSyAmOSK7giyvrWqloOAW8kRwcOzisdmo9GU&#34;,
+    authDomain: &#34;fir-data-360222.firebaseapp.com&#34;,
+    projectId: &#34;firebasedata-360222&#34;,
+    storageBucket: &#34;firebasedata-360222.appspot.com&#34;,
+    messagingSenderId: &#34;849197791561&#34;,
+    appId: &#34;1:849197791561:web:d223eaf691532593134298&#34;
+};
+
+</code></pre>
+<p>Click on <strong>Contine to Console</strong>.</p>
+<p>After this step, you can close the <strong>Firebase Console</strong> and get back to the <strong>Google Cloud Console</strong> to finish the rest of the features.</p>
+<h2 is-upgraded>Develop the feature</h2>
+<p>Locate the <strong>shopping-cart</strong> folder we created earlier. Right-click on the folder and create an <strong>index.html</strong> file. Drop the contents of the code below inside this file:</p>
+<pre><code language="language-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;style&gt;
+            body {
+                font-family: &#39;Montserrat&#39;, sans-serif;
+                padding: 0;
+                margin: 0;
+            }
+
+            .header {
+                background: #FFE200;
+                padding: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .header &gt; .material-icons {
+                font-size: 80px !important;
+            }
+
+            .header-main-title {
+                flex: 1;
+                margin-left: 10px;
+            }
+            
+            .header-title {
+                font-weight: bold;
+                font-size: 40px;
+            }
+
+            #shopping-cart {
+                display: flex;
+                align-items: center;
+            }
+
+            #shopping-cart &gt; .material-icons {
+                font-size: 30px !important;
+            }
+
+            #shopping-cart &gt; .trash {
+                margin-left: 20px;
+                cursor: pointer;
+            }
+
+            #shopping-cart &gt; #cart-items {
+                font-size: 30px;
+                margin-left: 10px;
+                font-weight: bold;
+            }
+        &lt;/style&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/icon?family=Material+Icons&#34; rel=&#34;stylesheet&#34;&gt;
+        &lt;link rel=&#34;preconnect&#34; href=&#34;https://fonts.googleapis.com&#34;&gt;
+        &lt;link rel=&#34;preconnect&#34; href=&#34;https://fonts.gstatic.com&#34; crossorigin&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&amp;display=swap&#34; rel=&#34;stylesheet&#34;&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div class=&#34;header&#34;&gt;
+            &lt;span class=&#34;material-icons&#34;&gt;pest_control&lt;/span&gt;
+            &lt;div class=&#34;header-main-title&#34;&gt;
+                &lt;div class=&#34;header-title&#34;&gt;What&#39;s Bugging&#39; you?&lt;/div&gt;
+                &lt;div class=&#34;header-subtitle&#34;&gt;Pest Control Products Online Store&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div id=&#34;shopping-cart&#34;&gt;
+                &lt;span class=&#34;material-icons&#34;&gt;shopping_cart&lt;/span&gt;
+                &lt;div id=&#34;cart-items&#34;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;script src=&#34;https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js&#34;&gt;&lt;/script&gt;
+        &lt;script src=&#34;https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js&#34;&gt;&lt;/script&gt;
+        &lt;script type=&#34;module&#34;&gt;
+            
+            // &lt;YOUR OWN FIREBASE PROJECT CONFIGURATION&gt;
+            /*
+            const firebaseConfig = {
+              apiKey: &#34;AIzaSyAmOSK7giyvrWqloOAW8kRwcOzisdmo9GU&#34;,
+              authDomain: &#34;fir-data-360222.firebaseapp.com&#34;,
+              projectId: &#34;firebasedata-360222&#34;,
+              storageBucket: &#34;firebasedata-360222.appspot.com&#34;,
+              messagingSenderId: &#34;849197791561&#34;,
+              appId: &#34;1:849197791561:web:d223eaf691532593134298&#34;
+            };
+            */
+          
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const firestore = firebase.firestore();
+
+            // listen to changes occurring on the &#34;orders&#34; collection
+            firestore.collection(&#39;orders&#39;).onSnapshot((snapshot) =&gt; {
+                document.getElementById(&#39;cart-items&#39;).innerText = snapshot.docs.length;
+
+                let foundTrashCan = document.getElementById(&#39;shopping-cart&#39;).getElementsByClassName(&#39;trash&#39;);
+                if (foundTrashCan &amp;&amp; foundTrashCan.length &gt; 0) {
+                    document.getElementById(&#39;shopping-cart&#39;).removeChild(foundTrashCan[0]);
+                }
+
+                if (snapshot.docs.length &gt; 0) {
+                    let trashCanIcon = document.createElement(&#39;span&#39;);
+                    trashCanIcon.className = &#39;material-icons trash&#39;;
+                    trashCanIcon.innerText = &#39;delete_forever&#39;;
+                    document.getElementById(&#39;shopping-cart&#39;).appendChild(trashCanIcon);
+                    
+                    // upon clicking on the trash icon,
+                    // delete all orders from the &#34;orders&#34; collection
+                    trashCanIcon.addEventListener(&#39;click&#39;, async () =&gt; {
+                        let allOrders = await firestore.collection(&#39;orders&#39;).get();
+                        allOrders.docs.forEach((doc) =&gt; {
+                            doc.ref.delete();
+                        });
+                    });
+                }
+            });
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p>In the HTML code above, find the line <strong>YOUR OWN FIREBASE PROJECT CONFIGURATION</strong> and replace it with your own <strong>firebaseConfig</strong> object (retrieved from the Firebase Console when we registered the web app).</p>
+<p>Let&#39;s inspect the code a little bit.</p>
+<p>We import both <strong>firebase-app.js</strong> and <strong>firebase-firestore.js</strong> JS libraries from publicly available CDNs; this the Firebase Javascript SDK that provides web apps with the Firebase functionality to fetch, query and store data in Firebase Cloud Firestore.</p>
+<p>We initialize the <strong>firebase</strong> instance by calling <strong>firebase.initializeApp</strong> and feeding the <strong>firebaseConfig</strong> to it.</p>
+<p>Then we get a reference to the <strong>firestore</strong> so we can access our Cloud Firestore database and pull its data.</p>
+<p>We then listen to changes on a specific collection (<strong>orders</strong>) using the <strong>onSnapshot</strong>  method and attaching a callback to it, which will be triggered upon orders being added / removed.</p>
+<p>We pull the data from the <strong>snapshot</strong> received by querying its <strong>docs</strong>, and parse it accordingly to display the number of orders.</p>
+<p>We also wire up a click event to our trash icon so inside we can do a <strong>delete</strong> on all document references by looping through them and deleting them using <strong>doc.ref.delete()</strong>.</p>
+<h2 is-upgraded>Create the Dockerfile</h2>
+<p>Still inside the <strong>shopping-cart</strong> folder, right-click and create a new file called <strong>Dockerfile</strong>; drop the code below inside this file:</p>
+<pre><code language="language-cmd" class="language-cmd">FROM nginx:latest
+COPY . /usr/share/nginx/html/
+
+EXPOSE 80
+CMD [&#34;nginx&#34;, &#34;-g&#34;, &#34;daemon off;&#34;]
+
+</code></pre>
+<p>The code above will be pretty much the same for all web apps we&#39;ll be building, just so you know. It will use the base NGINX image publicly available, copy all files inside this folder, expose port 80 and run NGINX with the the <strong>daemon</strong> option off.</p>
+<p>Let&#39;s build the image.</p>
+<h2 is-upgraded>Build the Shopping Cart Docker image</h2>
+<p>With the code and the Dockerfile in place, let&#39;s build its corresponding image.</p>
+<p>If you still have the Terminal open, navigate to the <strong>shopping-cart</strong> folder, or open a new one.</p>
+<p>Run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker build -t shopping-cart-img .
+
+</code></pre>
+<p>Same as before, we will be building a Docker image tagged <strong>shopping-cart-img</strong> from the contents of this folder.</p>
+<p>After a few seconds, you should get a successful message that the image was built.</p>
+<p>Verify that the Docker image got successfully build by running the <strong>docker image ls</strong> command, where you should see the newly created image:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker image ls
+
+REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
+footer-img          latest    b2b5a750d832   16 seconds ago   142MB
+shopping-cart-img   latest    5a393cb354c3   52 seconds ago   142MB
+nginx               latest    2b7d6430f78d   2 weeks ago      142MB
+
+</code></pre>
+<p>At this point you should see all images being built up to this point.</p>
+<h2 is-upgraded>Run the Shopping Cart Container</h2>
+<p>Still inside the <strong>shopping-cart</strong> folder, run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker run -d -p 8081:80 --name shopping-cart-container shopping-cart-img
+
+</code></pre>
+<p>With the above command, we are running a container named <strong>shopping-cart-container</strong> based off of the <strong>shopping-cart-img</strong> image created earlier, and exposing the internal port 80 to the external port 8081; notice we&#39;re using a separate port for this web app. Make sure to honor this so there are no conflicts between ports.</p>
+<p>Verify that the container is successfully running, along the <strong>footer-container</strong> container by running <strong>docker ps</strong>:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker ps
+
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                  NAMES
+c3ff8fd8a4ef   shopping-cart-img   &#34;/docker-entrypoint....&#34;   3 seconds ago    Up 2 seconds    0.0.0.0:8081-&gt;80/tcp   shopping-cart-container
+9c91e7825dbc   footer-img          &#34;/docker-entrypoint....&#34;   25 seconds ago   Up 25 seconds   0.0.0.0:8083-&gt;80/tcp   footer-container
+
+</code></pre>
+<p>Do the same exercise as before to preview the shopping cart web app in the browser by activating the <strong>Web Preview</strong> feature, changing the port to <strong>8081</strong>, then clicking on <strong>Change and Preview</strong>. You should get another browser window with the following output:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/85e55fec2e9f4bf1.png"></p>
+<p>As you can see, this feature will represent the header portion of our e-commerce site which encapsulates the functionality of a simple shopping cart, showing the number of orders placed and the capability to clear the orders from the cart. Simple as that.</p>
+<p>With this completed, let&#39;s proceed to do the products feature.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Develop the Products Feature" duration="0">
+        <p>The product feature of this e-commerce site will display all products available in the inventory (coming from the <strong>products</strong> database we populated earlier). Users are able to see the product information, and clicking on any product in particular to add them to their cart. This feature communicates seamlessly with the <strong>shopping-cart</strong> functionality via well-synchronized, orchestrated updates to both the <strong>orders</strong> and <strong>products</strong> collections, and listening to the corresponding changes occurring to those collections, and processing the responses accordingly.</p>
+<p>Let&#39;s build it!</p>
+<p>Locate the <strong>products</strong> folder we created earlier. Right-click on the folder and create an <strong>index.html</strong> file. Drop the contents of the code below:</p>
+<pre><code language="language-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;style&gt;
+            body {
+                font-family: &#39;Montserrat&#39;, sans-serif;
+                padding: 0;
+                margin: 0;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .bug-product {
+                padding: 30px;
+                margin: 5px;
+                text-align: center;
+                border-radius: 20px;
+                border: 5px solid #FFF;
+                cursor: pointer;
+                position: relative;
+            }
+
+            .bug-product:hover {
+                border: 5px solid #f4f4f4;
+            }
+
+            .bug-product &gt; img {
+                width: 200px;
+                height: 200px;
+                margin-bottom: 10px;
+            }
+
+            .bug-product-title {
+                font-weight: bold;
+                width: 200px;
+                text-align: center;
+                margin: 0px auto;
+            }
+
+            .bug-product-description {
+                color: grey;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 200px;
+                overflow: hidden;
+                text-align: center;
+                margin: 10px;
+                display: inline-block;
+            }
+
+            .bug-product-price {
+                font-weight: bold;
+            }
+
+            .bug-product &gt; .in-cart {
+                position: absolute;
+                font-size: 40px;
+                color: #bbbb00;
+                top: 0;
+                right: 0;
+                padding: 20px;
+            }
+
+            .bug-product-btn {
+                background: #FFE200;
+                border-radius: 50px;
+                padding: 10px 20px;
+                display: inline-flex;
+                align-items: center;
+                font-weight: bold;
+                margin-top: 10px;
+                cursor: pointer;
+            }
+
+            .bug-product-btn-label {
+                margin-left: 20px;
+            }
+
+            .main-content {
+                flex: 1;
+                height: 100%;
+            }
+
+            .main-content-wrapper {
+                padding: 30px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .main-content-wrapper &gt; h2 {
+                padding: 0px;
+                margin: 0px;
+            }
+
+            #main-grid {
+                margin-top: 20px;
+                display: grid;
+                grid-template-columns:  1fr 1fr 1fr;
+            }
+
+            @media screen and (max-width: 930px) {
+                #main-grid {
+                    grid-template-columns:  1fr !important;
+                }
+            }
+
+            #product-loading-container {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                color: #c3b962;
+            }
+
+            #product-loading-container .material-icons {
+                font-size: 50px;
+            }
+        &lt;/style&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/icon?family=Material+Icons&#34; rel=&#34;stylesheet&#34;&gt;
+        &lt;link rel=&#34;preconnect&#34; href=&#34;https://fonts.googleapis.com&#34;&gt;
+        &lt;link rel=&#34;preconnect&#34; href=&#34;https://fonts.gstatic.com&#34; crossorigin&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&amp;display=swap&#34; rel=&#34;stylesheet&#34;&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;section class=&#34;main-content&#34;&gt;
+            &lt;section class=&#34;main-content-wrapper&#34;&gt;
+                &lt;h2&gt;Bug-Killing Products&lt;/h2&gt;
+                &lt;div&gt;Please select one of our best-selling products:&lt;/div&gt;
+                &lt;section id=&#34;main-grid&#34;&gt;&lt;/section&gt;
+                &lt;section id=&#34;product-loading-container&#34;&gt;
+                    &lt;div class=&#34;product-loading&#34;&gt;
+                        &lt;div&gt;&lt;span class=&#34;material-icons&#34;&gt;bug_report&lt;/span&gt;&lt;/div&gt;
+                        &lt;div&gt;Loading Products...&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/section&gt;
+            &lt;/section&gt;
+        &lt;/section&gt;
+        &lt;script src=&#34;https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js&#34;&gt;&lt;/script&gt;
+        &lt;script src=&#34;https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js&#34;&gt;&lt;/script&gt;
+        &lt;script type=&#34;module&#34;&gt;
+            
+            // &lt;YOUR OWN FIREBASE PROJECT CONFIGURATION&gt;
+            /*
+            const firebaseConfig = {
+              apiKey: &#34;AIzaSyAmOSK7giyvrWqloOAW8kRwcOzisdmo9GU&#34;,
+              authDomain: &#34;fir-data-360222.firebaseapp.com&#34;,
+              projectId: &#34;firebasedata-360222&#34;,
+              storageBucket: &#34;firebasedata-360222.appspot.com&#34;,
+              messagingSenderId: &#34;849197791561&#34;,
+              appId: &#34;1:849197791561:web:d223eaf691532593134298&#34;
+            };
+            */
+          
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const firestore = firebase.firestore();
+
+            // listen to changes occurring on the &#34;orders&#34; collection
+            firestore.collection(&#39;orders&#39;).onSnapshot((snapshot) =&gt; {
+                
+                clearAllInCartItems();
+
+                // loop through 
+                snapshot.docs.forEach((doc) =&gt; {
+                    let prodInCart = document.getElementById(doc.id);
+                    
+                    if (prodInCart) {
+
+                        let prodInCartEls = prodInCart.getElementsByClassName(&#39;in-cart&#39;);
+
+                        if (prodInCartEls &amp;&amp; prodInCartEls.length == 0) {
+                            const addedToCardIndicator = document.createElement(&#39;span&#39;);
+                            addedToCardIndicator.className = &#39;material-icons in-cart&#39;;
+                            addedToCardIndicator.innerText = &#39;task_alt&#39;;
+                            prodInCart.appendChild(addedToCardIndicator);
+                        }
+                    }
+                });
+            });
+
+            // listen to changes in the &#34;products&#34; collection
+            firestore.collection(&#34;products&#34;).onSnapshot((snapshot) =&gt; {
+                document.getElementById(&#39;main-grid&#39;).innerHTML = &#39;&#39;;
+                document.getElementById(&#39;product-loading-container&#39;).remove();
+                
+                snapshot.docs.forEach(async (doc) =&gt; {
+                    const data = doc.data();
+                    await generateProductContent(doc.id, data);
+                });
+            });
+
+            // clear all items in the cart
+            function clearAllInCartItems() {
+                let allBugProducts = document.getElementsByClassName(&#39;bug-product&#39;);
+                if (allBugProducts &amp;&amp; allBugProducts.length &gt; 0) {
+                    for(let p = 0; p &lt; allBugProducts.length; p++) {
+                        let prod = allBugProducts[p];
+                        let inCartElements = prod.getElementsByClassName(&#39;in-cart&#39;);
+                        if (inCartElements &amp;&amp; inCartElements.length &gt; 0) {
+                            for(let i = 0; i &lt; inCartElements.length; i++) {
+                                prod.removeChild(inCartElements[i]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // check whether a product, provided its unique id
+            // is in the cart, so we can show a little
+            // checkbox on it
+            async function isProductInCart(id) {
+                let docRef = await firestore.collection(&#39;orders&#39;).doc(id).get();
+                return docRef.exists ? 
+                &#39;&lt;span class=&#34;material-icons in-cart&#34;&gt;task_alt&lt;/span&gt;&#39;: &#39;&#39;;
+            }
+
+            // builds the HTML template to display the product information
+            async function generateProductContent(id, data) {
+                let product = document.createElement(&#39;div&#39;);
+                product.className = &#39;bug-product&#39;;
+                product.id = id;
+                let isProduct = await isProductInCart(id);
+                product.innerHTML = `
+                    ${ isProduct }
+                    &lt;img src=&#34;${data[&#39;img&#39;]}&#34;&gt;
+                    &lt;div class=&#34;bug-product-title&#34;&gt;${data[&#39;name&#39;]}&lt;/div&gt;
+                    &lt;div class=&#34;bug-product-description&#34;&gt;${data[&#39;description&#39;]}&lt;/div&gt;
+                    &lt;div class=&#34;bug-product-price&#34;&gt;$${data[&#39;price&#39;]}&lt;/div&gt;
+                    &lt;div class=&#34;bug-product-btn&#34;&gt;
+                        &lt;span class=&#34;material-icons&#34;&gt;add_shopping_cart&lt;/span&gt;
+                        &lt;span class=&#34;bug-product-btn-label&#34;&gt;Add To Cart&lt;/span&gt;
+                    &lt;/div&gt;`;
+            
+                document.getElementById(&#39;main-grid&#39;).appendChild(product);
+                
+                // upon clicking on a product
+                // add it to the &#34;orders&#34; collection
+                product.addEventListener(&#39;click&#39;, () =&gt; {
+                    firestore.collection(&#34;orders&#34;).doc(id).set({
+                        &#34;order&#34;: new Date().getTime(),
+                        &#34;productId&#34;: id
+                    });
+                });
+            }
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p>Let&#39;s go over the code above for a bit.</p>
+<p>Make sure to replace the Firebase Config object (<strong>const firebaseConfig</strong>) with your own configuration retrieved earlier when we registered the web app.</p>
+<p>We initialize the <strong>firebase</strong> instance (<strong>firebase.initializeApp</strong>) and then fetch a <strong>firestore</strong> instance.</p>
+<p>Listen to changes occurring on both <strong>orders</strong> and <strong>products</strong> collection.</p>
+<p>When listening on the <strong>orders</strong> collection, upon receiving a notification, make sure to clear the products that are in the shopping cart on the initial load, just to be in sync, and display the checkbox indicator whether the product is in the cart or not.</p>
+<p>While listening on the <strong>products</strong> collection, capture the snapshot containing all documents; loop through them and build an HTML template containing the product info (<strong>generateProductContent</strong>). Inside this template, wire up a click event so the users can trigger an add action by adding the clicked product by id, as shown in the code below:</p>
+<pre><code language="language-javascript" class="language-javascript">///.. rest of the code omitted for brevity
+
+product.addEventListener(&#39;click&#39;, () =&gt; {
+
+    // add a new order document to the &#34;orders&#34; collection,
+    // using the product id as the key, and a small map object
+    // containing an order number and the product id 
+    firestore.collection(&#34;orders&#34;).doc(id).set({
+        &#34;order&#34;: new Date().getTime(),
+        &#34;productId&#34;: id
+    });
+});
+
+</code></pre>
+<p>With all that in place, let&#39;s proceed and create the corresponding Dockerfile that we&#39;ll use to build the corresponding image.</p>
+<h2 is-upgraded>Create the Dockerfile</h2>
+<p>Inside the <strong>products</strong> folder, right-click on the folder and create a new file called <strong>Dockerfile</strong>; drop the code below inside this file:</p>
+<pre><code language="language-cmd" class="language-cmd">FROM nginx:latest
+COPY . /usr/share/nginx/html/
+
+EXPOSE 80
+CMD [&#34;nginx&#34;, &#34;-g&#34;, &#34;daemon off;&#34;]
+
+</code></pre>
+<p>Now let&#39;s build the image for the container that will host the products functionality.</p>
+<h2 is-upgraded>Build the Products Docker image</h2>
+<p>With the code and the Dockerfile in place, let&#39;s build its corresponding image.</p>
+<p>If you still have the Terminal open, navigate to the <strong>products</strong> folder, or open a new one.</p>
+<p>Run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker build -t products-img .
+
+</code></pre>
+<p>This builds a Docker image tagged <strong>products-img</strong> from the contents of this folder.</p>
+<p>Same drill as before, verify the Docker image was build by checking the output from the command, and running the command <strong>docker image ls</strong>:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker image ls
+
+REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
+products-img        latest    0eab72bd4dd0   11 seconds ago   142MB
+footer-img          latest    b2b5a750d832   37 minutes ago   142MB
+shopping-cart-img   latest    5a393cb354c3   37 minutes ago   142MB
+nginx               latest    2b7d6430f78d   2 weeks ago      142MB
+
+</code></pre>
+<h2 is-upgraded>Run the Products Container</h2>
+<p>Still inside the <strong>products</strong> folder, run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker run -d -p 8082:80 --name products-container products-img
+
+</code></pre>
+<p>With the above command, we are running a container named <strong>products-container</strong> based off of the <strong>products-img</strong> image created earlier, and exposing the internal port 80 to the external port 8082.</p>
+<p>Verify that the three containers are successfully running (<strong>footer-container</strong>, <strong>shopping-cart-container</strong>, <strong>products-container</strong>) by running <strong>docker ps</strong>:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker ps
+
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                  NAMES
+4c8a16e6460a   products-img        &#34;/docker-entrypoint....&#34;   4 seconds ago    Up 2 seconds    0.0.0.0:8082-&gt;80/tcp   products-container
+c3ff8fd8a4ef   shopping-cart-img   &#34;/docker-entrypoint....&#34;   35 minutes ago   Up 35 minutes   0.0.0.0:8081-&gt;80/tcp   shopping-cart-container
+9c91e7825dbc   footer-img          &#34;/docker-entrypoint....&#34;   35 minutes ago   Up 35 minutes   0.0.0.0:8083-&gt;80/tcp   footer-container
+
+</code></pre>
+<p>Go ahead and preview the products web app in the browser by activating the Web Preview feature, changing the port to 8082, then clicking on Change and Preview. You should get another browser window with the following output:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/fde78013fb410561.png"></p>
+<p>If you&#39;ve followed all steps and done everything correctly, you should see a web app displaying all products we previously stored on the Firebase Cloud Firestore DB, in the <strong>products</strong> collection.</p>
+<p>Now that we&#39;ve built all our main three features, it&#39;s time to bring them all together and assemble them inside our e-commerce.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build the E-Commerce Feature" duration="0">
+        <p>With all the pieces built in isolation, we&#39;ll refer to a commonly used term in the industry known as &#34;Micro-Frontends&#34;, which is a variation on the Microservices approach, but applied to the Frontend.</p>
+<p>The idea behind <strong>Micro-Frontends</strong> is to think about a website or web app as a composition of features which are owned by independent teams. Each team has a distinct area of business or mission it cares about and specialises in (i.e. <strong>shopping cart</strong>, <strong>products</strong>, <strong>footer</strong>). A team is cross functional and develops its features end-to-end, from database to user interface.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/b15f72aa7e0d1615.png"></p>
+<p>In our case, each team focuses on a feature of the overall e-commerce site, and come together within a shell interface that integrates them. However, each of these features could well live on its own, making it highly reusable and portable.</p>
+<p>It also promotes autonomy on the developing team, as they can implement in the language or platform that is best suited for their feature, as well as the cadence in which updates get released, as it provides independence in their release pipelines.</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/83353318b83e2952.png"></p>
+<p>In our e-commerce example, the e-commerce site portion will serve as a shell with regions in which each of the features will render itself, while the synchronization and communication happens behind the scenes using strategies such as messages and events.</p>
+<p>Let&#39;s proceed and build out the e-commerce shell web app.</p>
+<h2 is-upgraded>Build the e-commerce shell web app</h2>
+<p>Locate the <strong>e-commerce</strong> folder, and follow the same strategy as in the previous containerized web apps: create a file called <strong>index.html</strong>; drop the bottom code into that file:</p>
+<pre><code language="language-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;style&gt;
+            body {
+                font-family: &#39;Montserrat&#39;, sans-serif;
+                padding: 0;
+                margin: 0;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .container {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            main {
+                flex: 1;
+            }
+
+            iframe {
+                border: none;
+                width: 100%;
+                height: 100%;
+            }
+
+        &lt;/style&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/icon?family=Material+Icons&#34; rel=&#34;stylesheet&#34;&gt;
+        &lt;link href=&#34;https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&amp;display=swap&#34; rel=&#34;stylesheet&#34;&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div class=&#34;container&#34;&gt;
+            &lt;header&gt;
+                &lt;iframe src=&#34;SHOPPING_CART_URL&#34;&gt;&lt;/iframe&gt;
+            &lt;/header&gt;
+            &lt;main&gt;
+                &lt;iframe src=&#34;PRODUCTS_URL&#34;&gt;&lt;/iframe&gt;
+            &lt;/main&gt;
+            &lt;footer&gt;
+                &lt;iframe src=&#34;FOOTER_URL&#34;&gt;&lt;/iframe&gt;
+            &lt;/footer&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+
+</code></pre>
+<p>Notice how the HTML structure consists of three regions: <strong>header</strong>, <strong>main</strong> and <strong>footer</strong>, corresponding to our <strong>shopping cart</strong>, <strong>producst</strong> and <strong>footer</strong> features respectively. Also notice how each region has an <strong>iframe</strong> tag inside; this is how we will host each of the web apps we built out earlier, that way they can be hosted independently but rendered as a portion of the whole UI, and when they come together, it will look like a cohesive unit.</p>
+<p>Feed the corresponding URL from each of our running containerized web apps (remember the URLS we were previewing on their specified ports? yeah, we need those now!). Grab each corresponding URL and paste it on each <strong>iframe</strong>; locate the <strong>SHOPPING_CART_URL</strong>, <strong>PRODUCTS_URL</strong> and <strong>FOOTER_URL</strong> and replace accordingly.</p>
+<p>Copy the URL all the way until the <strong>xxx.cloudshell.dev</strong> suffix; no need to grab the rest of the URL.</p>
+<p>Your code may look like this after this change:</p>
+<pre><code language="language-html" class="language-html">// ... rest of the code omitted
+
+ &lt;div class=&#34;container&#34;&gt;
+    &lt;header&gt;
+        &lt;iframe src=&#34;https://8082-e6589e84-32d3-4913-a227-80041f558c8e.cs-us-east1-vpcf.cloudshell.dev&#34;&gt;&lt;/iframe&gt;
+    &lt;/header&gt;
+    &lt;main&gt;
+        &lt;iframe src=&#34;https://8083-e6589e84-32d3-4913-a227-80041f558c8e.cs-us-east1-vpcf.cloudshell.dev&#34;&gt;&lt;/iframe&gt;
+    &lt;/main&gt;
+    &lt;footer&gt;
+        &lt;iframe src=&#34;https://8084-e6589e84-32d3-4913-a227-80041f558c8e.cs-us-east1-vpcf.cloudshell.dev&#34;&gt;&lt;/iframe&gt;
+    &lt;/footer&gt;
+&lt;/div&gt;
+
+</code></pre>
+<p>Let&#39;s host this on its own container, but first we should create the Dockerfile so we can build its corresponding image.</p>
+<h2 is-upgraded>Create the Dockerfile</h2>
+<p>Inside the <strong>e-commerce</strong> folder, right-click on the folder and create a new file called <strong>Dockerfile</strong>; drop the code below inside this file:</p>
+<pre><code language="language-cmd" class="language-cmd">FROM nginx:latest
+COPY . /usr/share/nginx/html/
+
+EXPOSE 80
+CMD [&#34;nginx&#34;, &#34;-g&#34;, &#34;daemon off;&#34;]
+
+</code></pre>
+<p>Now let&#39;s build the image for the container that will host the products functionality.</p>
+<h2 is-upgraded>Build the E-Commerce Docker Image</h2>
+<p>With the code and the Dockerfile in place, let&#39;s build its corresponding image.</p>
+<p>Navigate to the products folder, or open a new one.</p>
+<p>Run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker build -t ecommerce-img .
+
+</code></pre>
+<p>This builds a Docker image tagged <strong>ecommerce-img</strong> from the contents of this folder.</p>
+<p>Same drill as before, verify the Docker image was build by checking the output from the command, and running the command <strong>docker image ls</strong>:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker image ls
+
+REPOSITORY          TAG       IMAGE ID       CREATED         SIZE
+ecommerce-img       latest    2b87ed436efa   4 seconds ago   142MB
+products-img        latest    c1d52b42da1d   2 minutes ago   142MB
+shopping-cart-img   latest    2ed75a46d771   2 minutes ago   142MB
+footer-img          latest    46e8382d1308   3 minutes ago   142MB
+nginx               latest    2b7d6430f78d   2 weeks ago     142MB
+
+</code></pre>
+<h2 is-upgraded>Run the E-Commerce Container</h2>
+<p>Still inside the <strong>e-commerce</strong> folder, run the following command:</p>
+<pre><code language="language-cmd" class="language-cmd">docker run -d -p 8080:80 --name ecommerce-container ecommerce-img
+
+</code></pre>
+<p>With the above command, we are running a container named <strong>ecommrece-container</strong> based off of the <strong>ecommerce-img</strong> image created earlier, and exposing the internal port 80 to the external port 8080.</p>
+<p>Verify one last time that all containers are running by running the command <strong>docker ps</strong>:</p>
+<pre><code language="language-cmd" class="language-cmd">$&gt; docker ps
+
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                  NAMES
+cbafaf0d2a88   ecommerce-img       &#34;/docker-entrypoint....&#34;   34 seconds ago   Up 34 seconds   0.0.0.0:8080-&gt;80/tcp   ecommerce-container
+a5f0ec80f2a6   products-img        &#34;/docker-entrypoint....&#34;   9 minutes ago    Up 9 minutes    0.0.0.0:8082-&gt;80/tcp   products-container
+c86a06a5b595   shopping-cart-img   &#34;/docker-entrypoint....&#34;   9 minutes ago    Up 9 minutes    0.0.0.0:8081-&gt;80/tcp   shopping-cart-container
+019a12837821   footer-img          &#34;/docker-entrypoint....&#34;   10 minutes ago   Up 10 minutes   0.0.0.0:8083-&gt;80/tcp   footer-container
+
+</code></pre>
+<p>If all went well, proceed to preview the containerized e-commerce shell web app, which should contain all integrated features in a single web app. Preview it on port 8080 and you should get the following output:</p>
+<p class="image-container"><img alt="MicroServices UI" src="img/a3ad31fc5090e113.gif"></p>
+<p>Amazing work! We accomplished a lot in this workshop, where we deployed several apps as microservices, and integrated them using a micro-frontend strategy to display them as a cohesive user interface. Great job!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Wrap-up" duration="0">
+        <p>Congrats in making it this far! In this codelab, we accomplished the following:</p>
+<ul>
+<li>Learned about Docker, how to create images and build containers from them</li>
+<li>Learned about how to deploy containers and achieve a microservices architecture</li>
+<li>How to implement multiple features of an application and develop them in isolation, but able to communicate among each other in a decoupled fashion</li>
+<li>Integrate features into a single, cohesive unit using a microfrontend architecture</li>
+<li>Learn about Firebase, how to use Firebase Cloud Firestore as your data store and leverage its real-time capabilities</li>
+<li>Use the Google Cloud and leverage its free offerings (Cloud Shell Terminal and Editor)</li>
+</ul>
+<h3 is-upgraded>Please don&#39;t forget to follow me on social media:</h3>
+<ul>
+<li>On Twitter (<a href="https://www.twitter.com/drcoderz" target="_blank">@drcoderz</a>)</li>
+<li>On YouTube (<a href="https://www.youtube.com/channel/UCKsp3r1ERjCpKJtD2n5WtPg" target="_blank">Roman Just Codes</a>)</li>
+<li>On My <a href="https://romanjustcodes.web.app/#/home" target="_blank">Personal Portfolio</a></li>
+<li>On <a href="https://medium.com/@romanejaquez" target="_blank">Medium</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+  <script>
+    $(function() {
+      $('#done').removeAttr('href');
+      $('#done').css('cursor', 'pointer');
+      $('#done').click(function () { 
+        window.location.href = 'https://romanjustcodes.web.app/#/workshops';
+      });
+    });
+  </script>
+</body>
+</html>
